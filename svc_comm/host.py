@@ -11,3 +11,16 @@ DLOG_SET = {
     'maxBytes': 100 * 1024 * 1024,
     'backupCount': 9
 }
+
+DB_ACCOUNT_RELEASE = {
+    'host': '10.249.50.181',
+    'port': 14514,
+    'user': 'root',
+    'password': 'mysql',
+    'database': 'active',
+    'charset': 'utf8',
+    'autocommit': True,
+    'connect_timeout': 3,
+    'read_timeout': 10,
+    'write_timeout': 5
+}
