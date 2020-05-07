@@ -4,6 +4,9 @@ import pymysql
 import decimal
 import datetime
 
+from svc_comm import host
+
+
 class MysqlUtil(object):
     """
     访问mysql的一些常用功能，通过参数绑定来防止sql注入
@@ -67,7 +70,6 @@ class MysqlUtil(object):
             m, s = divmod(remain, 60)
             return '%02d:%02d:%02d' % (h, m, s)
         return v
-
 
     def db_query(self, operation, params=None, dict_format=True, re_conn=True):
         """
@@ -182,9 +184,8 @@ class SimpleDb(object):
         result = self.m_db.db_query(sql, where_value)
         return result
 
-from svc_comm import host
+
 class MyDb(SimpleDb):
-    m_mc = None
 
     def __init__(self, db_config_name=host.DB_ACCOUNT_RELEASE):
         SimpleDb.__init__(self, db_config_name)

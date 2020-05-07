@@ -39,16 +39,16 @@ def url_module_report(url_handler):
             rsp = url_handler(obj)
         except:
             logging.error('url_handler exception: %s' % '错误')
-        finally:
-            if isinstance(rsp, tuple):
-                code, value, rsp_str = rsp
-            else:
-                code = rsp['code'] if obj.pure_js else rsp['returnCode']
-                value = rsp['value'] if obj.pure_js else rsp['returnValue']
-                rsp_str = json_encode(rsp, False)
+        # finally:
+        #     if isinstance(rsp, tuple):
+        #         code, value, rsp_str = rsp
+        #     else:
+        #         code = rsp['code'] if obj.pure_js else rsp['returnCode']
+        #         value = rsp['value'] if obj.pure_js else rsp['returnValue']
+        #         rsp_str = json_encode(rsp, False)
+        #
+        #     logging.info("code:%s value:%s ,business timecost: %sms", code, value, time.time())
 
-            logging.info("code:%s value:%s ,business timecost: %sms", code, value, time.time())
-
-            return make_response(rsp_str, {"Content-Type": "application/json"})
+            return make_response(rsp, {"Content-Type": "application/json"})
 
     return wrapper

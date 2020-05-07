@@ -1,12 +1,11 @@
 # -*- coding:utf-8 -*-
 import logging
-import requests
 from flask import Blueprint
 from svc_comm import log_control, host
-from account.api_account import AccountInfo
+from user.user_control import UserInfo
 
 
-account_console = Blueprint('account_console', __name__)
+user_console = Blueprint('user', __name__)
 
 
 def init_each_process():
@@ -17,7 +16,7 @@ def init_each_process():
     log_control.get_log(None, host.LOG_SET, logging.INFO)
 
 
-class Account(object):
+class User(object):
     """
     主进程的所有东西都会被子进程继承，尽量不要初始化太多东西
     """
@@ -33,22 +32,22 @@ class Account(object):
         # requests.adapters.DEFAULT_RETRIES = 1
         logging.getLogger('requests').setLevel(logging.WARNING)
         logging.getLogger('urllib3').setLevel(logging.WARNING)
-        Account.add_urls(account_console)
-        app.register_blueprint(account_console, url_prefix='/account_console')
+        User.add_urls(user_console)
+        app.register_blueprint(user_console, url_prefix='/user')
 
     @classmethod
     def add_urls(cls, blue):
 
-        api_account = AccountInfo()
+        user_info = UserInfo()
 
 
         post_urls = {
 
-            '/account/add': api_account.account_add,
+            '/register': user_info.user_add,
         }
 
         for url in post_urls:
-            blue.add_url_rule(url, url.replace('/', '_'), post_urls[url], methods=('OPTIONS', 'POST'))
+            blue.add_url_rule(url, url.replace('/', '_'), post_urls[url], methods=('OPTIONS', 'GET'))
 
 
 
