@@ -9,7 +9,7 @@ class UserInfo(MysqlUtil):
 
         self.my_db = MyDb()
 
-    @url_module_report
+    # @url_module_report
     def user_add(self):
 
         return '11111'
