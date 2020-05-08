@@ -13,8 +13,8 @@ DLOG_SET = {
 }
 
 DB_ACCOUNT_RELEASE = {
-    'host': '10.249.50.181',
-    'port': 14514,
+    'host': '18.163.103.171',
+    'port': 3306,
     'user': 'root',
     'password': 'mysql',
     'database': 'active',

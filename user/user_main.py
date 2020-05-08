@@ -43,11 +43,11 @@ class User(object):
 
         post_urls = {
 
-            '/register': user_info.user_add,
+            '/register': user_info.add_user,
         }
 
         for url in post_urls:
-            blue.add_url_rule(url, url.replace('/', '_'), post_urls[url], methods=('OPTIONS', 'GET'))
+            blue.add_url_rule(url, url.replace('/', '_'), post_urls[url], methods=('OPTIONS', 'POST'))
 
 
 

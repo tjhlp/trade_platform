@@ -5,6 +5,7 @@ import decimal
 import datetime
 
 from svc_comm import host
+from svc_comm.host import DB_ACCOUNT_RELEASE
 
 
 class MysqlUtil(object):
@@ -111,6 +112,7 @@ class SimpleDb(object):
 
     def __init__(self, db_config):
         self.m_db = MysqlUtil(db_config)
+        self.conn = None
         self._init_state()
 
     def _init_state(self):
@@ -135,6 +137,29 @@ class SimpleDb(object):
                 where_tpl.append('%s %s' % (k, '%s'))
             where_value.append(v)
         return " and ".join(where_tpl), where_value
+
+
+    @classmethod
+    def get_mysql_conn(cls, mdb):
+        """
+        简单的数据库实例连接池
+        :param mdb:
+        :return:
+        """
+        return pymysql.connect(**mdb)
+
+    def ping(self, re_conn):
+        """
+        检测连接状态并且重连
+        不要太早连接数据库，如果在主进程里就连接，会被子进程继承引起错误
+        不建议外部主动调用，执行sql会默认调用
+        :param re_conn: 是否重新连接
+        :return:
+        """
+        # get mysql connection
+        self.conn = self.get_mysql_conn(DB_ACCOUNT_RELEASE)
+        if re_conn:
+            self.conn.ping(reconnect=True)
 
     def _get_where(self, table_name, where, order_by=None, limit=None,
                    fields=None):
@@ -184,8 +209,56 @@ class SimpleDb(object):
         result = self.m_db.db_query(sql, where_value)
         return result
 
+    def db_insert(self, operation, params=None, re_conn=True):
+        """
+        插入操作
+        :param operation:
+        :param params:
+        :param re_conn:
+        :return:
+        使用样例
+        sql = '''insert into t_v2_product(categoryid,name,product,last_modify)values(%s,%s,%s,%s)'''
+        result = self.db_insert(sql, [js['categoryid'], js['name'], json_encode(js['product']), http_user_id()])
+        """
+        self.ping(re_conn)
+
+        try:
+            csr = self.conn.cursor()
+            csr.execute(operation, tuple(params) if isinstance(params, list) else params)
+            affect = csr.lastrowid
+            csr.close()
+            return affect
+        except Exception as e:
+            log_str = 'db_insert db got exception:%s, operation:%s, params:%s' % (str(e), operation, params)
+            logging.error(log_str)
+            raise
+
 
 class MyDb(SimpleDb):
 
     def __init__(self, db_config_name=host.DB_ACCOUNT_RELEASE):
+        self.conn = None
         SimpleDb.__init__(self, db_config_name)
+
+    def db_insert(self, operation, params=None, re_conn=True):
+        """
+        插入操作
+        :param operation:
+        :param params:
+        :param re_conn:
+        :return:
+        使用样例
+        sql = '''insert into t_v2_product(categoryid,name,product,last_modify)values(%s,%s,%s,%s)'''
+        result = self.db_insert(sql, [js['categoryid'], js['name'], json_encode(js['product']), http_user_id()])
+        """
+
+        try:
+            csr = self.conn.cursor()
+            csr.execute(operation, tuple(params) if isinstance(params, list) else params)
+            affect = csr.lastrowid
+            csr.close()
+            return affect
+        except Exception as e:
+            log_str = 'db_insert db got exception:%s, operation:%s, params:%s' % (str(e), operation, params)
+            logging.error(log_str)
+            raise
