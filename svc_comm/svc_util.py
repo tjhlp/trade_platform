@@ -40,20 +40,16 @@ def url_module_report(url_handler):
         rsp = {'code': 500, 'value': -1, 'returnCode': 500, 'returnValue': -1}
         # noinspection PyBroadException
         try:
-            # real do
             rsp = url_handler(obj)
         except:
             logging.error('url_handler exception: %s' % '错误')
         finally:
-            #     if isinstance(rsp, tuple):
-            #         code, value, rsp_str = rsp
-            #     else:
-            #         code = rsp['code'] if obj.pure_js else rsp['returnCode']
-            #         value = rsp['value'] if obj.pure_js else rsp['returnValue']
-            rsp_str = json_encode(rsp, False)
-            print(rsp_str)
-            #
-            #     logging.info("code:%s value:%s ,business timecost: %sms", code, value, time.time())
+            if isinstance(rsp, tuple):
+                code, value, rsp_str = rsp
+            else:
+                code = rsp['code']
+                value = rsp['value']
+                rsp_str = json_encode(rsp, False)
 
             return make_response(rsp_str, {"Content-Type": "application/json"})
 
@@ -91,7 +87,7 @@ def valid_body_js(params):
     # noinspection PyBroadException
     try:
         raw_body = request.get_data(as_text=True)
-
+        print('dfafasdf:%s'% raw_body)
         all_js = json_decode(raw_body)
         # json_decode异常会返回{}，这里简单判断下是不是异常
         if len(raw_body) >= 16 and not all_js:
@@ -142,16 +138,11 @@ def dict2rsp(code, data, return_value=None):
     """
     value = return_value if return_value else code[2]
     all_js = {'value': value, 'code': code[0], 'msg': code[1], 'data': data}
-    # all_js = {
-    #     'version': self.pack['version'],
-    #     'componentName': self.pack['componentName'],
-    #     'eventId': self.pack['eventId'],
-    #     'returnValue': value,
-    #     'returnCode': code[0],
-    #     'returnMessage': code[1],
-    #     'data': data
-    # }
-
     raw_body = json_encode(all_js, False)
-
+    print(code[0], value, raw_body)
     return code[0], value, raw_body
+
+
+if __name__ == '__main__':
+    pass
+

@@ -2,7 +2,7 @@
 import logging
 from flask import Blueprint
 from svc_comm import log_control, host
-from user.user_control import UserInfo
+from user.user_control import *
 
 
 user_console = Blueprint('user', __name__)
@@ -39,7 +39,6 @@ class User(object):
     def add_urls(cls, blue):
 
         user_info = UserInfo()
-
 
         post_urls = {
 

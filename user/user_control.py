@@ -1,4 +1,5 @@
 import re
+from flask import make_response
 
 from svc_comm.mysql_control import MysqlUtil, MyDb, SimpleDb
 from svc_comm.host import *
@@ -38,7 +39,7 @@ class Model(SimpleDb):
         key = []
         value_holder = []
         value = []
-
+        print(params)
         for k, v in params.items():
             key.append('`%s`' % k)
             value_holder.append('%s')
@@ -50,29 +51,28 @@ class Model(SimpleDb):
         # 事务中不能打开重连
         if re_conn:
             re_conn = False
-
+        print(sql)
         last_insert_id = self.m_db.db_insert(sql, value, re_conn)
 
         return last_insert_id
 
 
 class UserInfo(object):
-    def __init__(self):
-        self.model = Model()
+    # def __init__(self):
+    #     self.model = Model()
 
-    @url_module_report
+    # @url_module_report
     def add_user(self):
         params = {'name': (1, str), 'mobile': (1, int), 'password': (1, int),
                   'password2': (1, int)}
         js, code = valid_body_js(params)
         # 验证请求参数
-
         if not re.match(r'^[a-zA-Z0-9_-]{5,20}$', js['name']):
             return code2rsp(CODE_USERNAME_ERROR)
 
         if not re.match(r'^[a-zA-Z0-9]{6,20}$', js['password']):
             return code2rsp(CODE_PASSWORD_TYPE)
-
+        print(123)
         if js['password'] != js['password2']:
             return code2rsp(CODE_PASSWORD_CONSISTENT)
 
@@ -80,13 +80,12 @@ class UserInfo(object):
 
         if not re.match(r'^1[3-9]\d{9}$', js['mobile']):
             return code2rsp(CODE_MOBILE_TYPE)
-
-        # 3 业务逻辑
-
-        user = self.model.my_insert('user', js)
+        print(112)
+        # # 业务逻辑
+        # user = self.model.my_insert('user', js)
 
         # 4 返回响应信息
-        if not user:
-            return code2rsp(CODE_ADD_ERROR)
+        # if not user:
+        #     return code2rsp(CODE_ADD_ERROR)
 
         return code2rsp(CODE_SUCCESS)
