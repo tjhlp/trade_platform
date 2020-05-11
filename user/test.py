@@ -1,11 +1,4 @@
-import re
-import copy
-from flask import make_response
-
-# from svc_comm.mysql_control import MysqlUtil, MyDb, SimpleDb
 from svc_comm.host import *
-from svc_comm.svc_util import *
-from svc_comm.sys_code import *
 
 
 class Model(SimpleDb):
@@ -13,7 +6,6 @@ class Model(SimpleDb):
 
     def __init__(self):
         super().__init__(DB_ACCOUNT_RELEASE)
-
 
     def simple_where_parse(self, where, table_name=None):
         """where条件解析，仅支持=和in操作, 各条件用and连接"""
@@ -41,6 +33,7 @@ class Model(SimpleDb):
         key = []
         value_holder = []
         value = []
+        print(params)
         for k, v in params.items():
             key.append('`%s`' % k)
             value_holder.append('%s')
@@ -53,42 +46,46 @@ class Model(SimpleDb):
         if re_conn:
             re_conn = False
         print(sql)
-        print(value)
-        last_insert_id = super().db_insert(sql, value, re_conn)
+        last_insert_id = self.m_db.db_insert(sql, value, re_conn)
 
         return last_insert_id
 
 
-class UserInfo(object):
+# js = {'name': '123sdgfd', 'mobile': '15077131300', 'password': '123456789'}
+# c = Model()
+#
+# c.my_insert('user', js)
+
+import pymysql
+
+mdb = {
+    'host': '18.163.103.171',
+    'port': 3306,
+    'user': 'root',
+    'password': 'mysql',
+    'database': 'active',
+    'charset': 'utf8',
+    'autocommit': True,
+    'connect_timeout': 3,
+    'read_timeout': 10,
+    'write_timeout': 5
+}
+
+
+from svc_comm.mysql_control import SimpleDb
+
+
+class Test(SimpleDb):
     def __init__(self):
-        self.model = Model()
+        super().__init__(DB_ACCOUNT_RELEASE)
 
-    @url_module_report
-    def add_user(self):
-        params = {'name': (1, str), 'mobile': (1, str), 'password': (1, str),
-                  'password2': (1, str)}
-        js, code = valid_body_js(params)
-        if not js:
-            logging.error('invalid param')
-            return code2rsp(CODE_INPUT_PARAM_INVALID)
 
-        # 验证请求参数
-        if not re.match(r'^[a-zA-Z0-9_-]{5,20}$', js['name']):
-            return code2rsp(CODE_USERNAME_ERROR)
-        if not re.match(r'^[a-zA-Z0-9]{6,20}$', js['password']):
-            return code2rsp(CODE_PASSWORD_TYPE)
-        if js['password'] != js['password2']:
-            print('两次输入不同')
-            return code2rsp(CODE_PASSWORD_CONSISTENT)
-        del js['password2']
-        if not re.match(r'^1[3-9]\d{9}$', js['mobile']):
-            return code2rsp(CODE_MOBILE_TYPE)
+    def get(self):
+        sql = "INSERT INTO `user`(`name`,`mobile`,`password`) values(%s,%s,%s)"
+        value = ['123sdgfd', '15077131300', '123456789']
+        last_insert_id = super().db_insert(sql, value, True)
+        return last_insert_id
 
-        # # 业务逻辑
-        user = self.model.my_insert('user', js)
-        # 返回响应信息
-        if not user:
-            print('数据库插入失败')
-            return code2rsp(CODE_ADD_ERROR)
 
-        return code2rsp(CODE_SUCCESS)
+t = Test()
+t.get()

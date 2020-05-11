@@ -36,11 +36,11 @@ def url_module_report(url_handler):
     """
 
     @functools.wraps(url_handler)
-    def wrapper(obj):
+    def wrapper(*args, **kwargs):
         rsp = {'code': 500, 'value': -1, 'returnCode': 500, 'returnValue': -1}
         # noinspection PyBroadException
         try:
-            rsp = url_handler(obj)
+            rsp = url_handler(*args, **kwargs)
         except:
             logging.error('url_handler exception: %s' % '错误')
         finally:
@@ -87,16 +87,14 @@ def valid_body_js(params):
     # noinspection PyBroadException
     try:
         raw_body = request.get_data(as_text=True)
-        print('dfafasdf:%s'% raw_body)
         all_js = json_decode(raw_body)
+
         # json_decode异常会返回{}，这里简单判断下是不是异常
         if len(raw_body) >= 16 and not all_js:
             return None, CODE_INVALID_JSON
-
         # 空json是允许的{}
         if not isinstance(all_js, dict):
             return None, CODE_INVALID_JSON
-
         if params:
             must = set()
             option = set()
@@ -139,7 +137,6 @@ def dict2rsp(code, data, return_value=None):
     value = return_value if return_value else code[2]
     all_js = {'value': value, 'code': code[0], 'msg': code[1], 'data': data}
     raw_body = json_encode(all_js, False)
-    print(code[0], value, raw_body)
     return code[0], value, raw_body
 
 

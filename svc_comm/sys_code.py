@@ -6,7 +6,7 @@ CODE_PASSWORD_CONSISTENT = (3, '密码不一致', 0)
 CODE_USERNAME_ERROR = (4, '用户名错误', 0)
 CODE_PASSWORD_TYPE = (5, '密码格式错误', 0)
 CODE_MOBILE_TYPE = (6, '手机号格式错误', 0)
-CODE_ADD_ERROR = (7, '手机号格式错误', 0)
+CODE_ADD_ERROR = (7, '手机号添加错误', 0)
 
 
 CODE_INPUT_PARAM_MISS = (400, '缺少必要的输入参数', 0)

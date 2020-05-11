@@ -24,3 +24,8 @@ DB_ACCOUNT_RELEASE = {
     'read_timeout': 10,
     'write_timeout': 5
 }
+
+from svc_comm.mysql_control import SimpleDb
+
+model = SimpleDb()
+# model.db_insert()

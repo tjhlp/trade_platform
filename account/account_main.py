@@ -3,7 +3,7 @@ import logging
 import requests
 from flask import Blueprint
 from svc_comm import log_control, host
-from account.api_account import AccountInfo
+# from account.api_account import AccountInfo
 
 
 account_console = Blueprint('account_console', __name__)
@@ -39,12 +39,12 @@ class Account(object):
     @classmethod
     def add_urls(cls, blue):
 
-        api_account = AccountInfo()
+        # api_account = AccountInfo()
 
 
         post_urls = {
 
-            '/account/add': api_account.account_add,
+            # '/account/add': api_account.account_add,
         }
 
         for url in post_urls:
