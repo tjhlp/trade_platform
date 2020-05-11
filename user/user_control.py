@@ -1,5 +1,5 @@
 import re
-import copy
+import pymysql
 from flask import make_response
 
 # from svc_comm.mysql_control import MysqlUtil, MyDb, SimpleDb
@@ -13,7 +13,6 @@ class Model(SimpleDb):
 
     def __init__(self):
         super().__init__(DB_ACCOUNT_RELEASE)
-
 
     def simple_where_parse(self, where, table_name=None):
         """where条件解析，仅支持=和in操作, 各条件用and连接"""
@@ -57,6 +56,29 @@ class Model(SimpleDb):
         print('last_wind:%s', last_insert_id)
         return last_insert_id
 
+    def my_query(self, table_name, params, limit):
+
+        where_value = []
+        where_key = []
+
+        if 'name' in params:
+            where_key.append('name=%s')
+            where_value.append(params['name'])
+
+
+        sql = '''SELECT * FROM %s WHERE %s ORDER BY id DESC %s''' % \
+              (table_name, ' AND '.join(where_key), limit)
+
+        result = super().db_query(sql, where_value)
+
+        for x in result:
+            x['name'] = json_decode(x['name'])
+            x['mobile'] = json_decode(x['product'])
+
+        rsp = {}
+        rsp['list'] = result
+        return rsp
+
 
 class UserInfo(object):
     def __init__(self):
@@ -89,5 +111,25 @@ class UserInfo(object):
         if not user:
             print('数据库插入失败')
             return code2rsp(CODE_ADD_ERROR)
+
+        return code2rsp(CODE_SUCCESS)
+
+    @url_module_report
+    def user_list(self):
+        params = {'name': (0, str), 'mobile': (0, str), 'page_index': (1, int), 'page_size': (1, int), }
+        js, code = valid_body_js(params)
+        if not js:
+            logging.error('invalid param')
+            return code2rsp(CODE_INPUT_PARAM_INVALID)
+
+        limit = self.model.append_limit(js['page_index'], js['page_size'])
+        if not limit:
+            return code2rsp(CODE_INVALID_PAGE_INDEX_SIZE)
+
+        # # 业务逻辑
+        user = self.model.my_query('user', js, limit)
+        # 返回响应信息
+        if not user:
+            return code2rsp(CODE_QUERY_ERROR)
 
         return code2rsp(CODE_SUCCESS)

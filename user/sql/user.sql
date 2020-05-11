@@ -12,4 +12,10 @@ create table user(
 	UNIQUE (name)
 ) charset='utf8';
 
+ALTER TABLE user
+    DROP INDEX name;
+
+ALTER TABLE user
+    ADD COLUMN email VARCHAR(30) NOT NULL COMMENT '手机号' default '';
+
 

@@ -43,6 +43,7 @@ class User(object):
         post_urls = {
 
             '/register': user_info.add_user,
+            '/list': user_info.user_list,
         }
 
         for url in post_urls:

@@ -126,5 +126,78 @@ class SimpleDb(object):
             logging.error(log_str)
             raise
 
+    @classmethod
+    def __json_type(cls, v):
+        """
+        mysql的浮点数Decimal，各种日期时间类型，json转换默认都不支持，需要特别处理
+        :param v:
+        :return:
+        """
+        if isinstance(v, decimal.Decimal):
+            return str(v)
+        elif isinstance(v, datetime.datetime):
+            return v.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(v, datetime.date):
+            return v.strftime('%Y-%m-%d')
+        elif isinstance(v, datetime.timedelta):
+            h, remain = divmod(int(v.total_seconds()), 3600)
+            m, s = divmod(remain, 60)
+            return '%02d:%02d:%02d' % (h, m, s)
+        return v
+
+    def db_query(self, operation, params=None, dict_format=True, re_conn=True):
+        """
+        查询结果集合默认返回字典的列表
+        :param operation:
+        :param params:
+        :param dict_format: False 返回tuple列表
+        :param re_conn:
+        :return:
+        使用样例
+        sql = '''select id,name from t_v2_activity'''
+        result = self.db_query(sql)
+        rsp = {x['id']: x['name'] for x in result}
+        """
+        self.ping(re_conn)
+
+        try:
+            csr = self.conn.cursor(cursor=pymysql.cursors.DictCursor if dict_format else None)
+            csr.execute(operation, tuple(params) if isinstance(params, list) else params)
+            r = csr.fetchall()
+            # 系统自带的json序列化不支持很多mysql类型,自行先转
+            for i in range(0, len(r)):
+                if dict_format:
+                    for k, v in r[i].items():
+                        r[i][k] = self.__json_type(v)
+                else:
+                    # tuple只能全部替换
+                    r[i] = tuple(map(lambda x: self.__json_type(x), r[i]))
+            csr.close()
+            return r
+        except Exception as e:
+            log_str = 'db_query db got exception:%s, operation:%s, params:%s' % (str(e), operation, params)
+            logging.error(log_str)
+            raise
+
+
+    @classmethod
+    def append_limit(cls, page_index, page_size, max_length=500):
+        """
+        根据分页参数生成limit字段'limit 1,2'
+        :param page_index: 第几页，从1开始
+        :param page_size: 每一页大小
+        :return:
+        """
+        if not isinstance(page_index, int) or not isinstance(page_size, int) or page_index <= 0 or page_size <= 0:
+            logging.info('invalid page_index or page_size')
+            return ''
+
+        # 一次最多查询500，保证安全
+        if page_size > max_length:
+            page_size = max_length
+
+        start = (page_index - 1) * page_size
+        return ' limit %s,%s' % (start, page_size)
+
 
 
