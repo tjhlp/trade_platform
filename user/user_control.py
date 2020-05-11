@@ -52,10 +52,9 @@ class Model(SimpleDb):
         # 事务中不能打开重连
         if re_conn:
             re_conn = False
-        print(sql)
-        print(value)
-        last_insert_id = super().db_insert(sql, value, re_conn)
 
+        last_insert_id = super().db_insert(sql, value, re_conn)
+        print('last_wind:%s', last_insert_id)
         return last_insert_id
 
 
