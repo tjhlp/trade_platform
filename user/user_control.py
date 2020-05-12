@@ -82,6 +82,9 @@ class Model(SimpleDb):
         rsp['list'] = result
         return rsp
 
+    def my_update(self, sql, js):
+        return super().db_update(sql, [js['id']])
+
 
 class UserInfo(object):
     def __init__(self):
@@ -136,5 +139,45 @@ class UserInfo(object):
         # 返回响应信息
         if not rsp:
             return code2rsp(CODE_QUERY_ERROR)
+
+        return dict2rsp(CODE_SUCCESS, rsp)
+
+    @url_module_report
+    def remove(self):
+        params = {'id': (1, int)}
+        js, code = valid_body_js(params)
+        if not js:
+            logging.error('invalid param')
+            return code2rsp(code)
+
+        try:
+            # 软删除，将状态置为删除
+            sql = '''update user set status='删除' where id=%s'''
+            result = self.model.my_update(sql, [js['id']])
+            self.model.db_commit()
+            rsp = {'affect': result}
+            return dict2rsp(CODE_SUCCESS, rsp)
+        except Exception as e:
+            self.model.db_rollback()
+            logging.error("exception: %s", str(e))
+            logging.info("delete activity %s failed" % js['id'])
+            return code2rsp(CODE_ACTION_FAILED)
+
+    @url_module_report
+    def update(self):
+        params = {'id': (0, int), 'name': (0, str), 'mobile': (0, str)}
+        js, code = valid_body_js(params)
+        if not js:
+            logging.error('invalid param')
+            return code2rsp(code)
+
+        update = self.model.append_set_update(js, ['id', 'name', 'mobile'], [])
+        if not update:
+            logging.error('invalid param')
+            return code2rsp(CODE_INPUT_PARAM_INVALID, '')
+
+        sql = '''update user ''' + update + ''' where id=%s'''
+        result = self.model.my_update(sql, [js['id']])
+        rsp = {'affect': result}
 
         return dict2rsp(CODE_SUCCESS, rsp)

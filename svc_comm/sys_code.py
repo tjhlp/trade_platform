@@ -18,3 +18,4 @@ CODE_INVALID_PAGE_INDEX_SIZE = (407, '分页参数不对，注意page_index是�
 CODE_FEQ_LIMIT = (408, '系统访问频率过快，请稍后再试', -1)
 CODE_INPUT_PARAM_INVALID_TYPE = (409, '参数类型错误', -1)
 CODE_QUERY_ERROR = (410, '查询错误', -1)
+CODE_ACTION_FAILED = (411, '操作失败，请稍后重试', 0)

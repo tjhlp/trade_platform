@@ -3,8 +3,10 @@ import threading
 import pymysql
 import decimal
 import datetime
+import re
 
 from svc_comm.host import DB_ACCOUNT_RELEASE
+from svc_comm.svc_util import *
 
 
 class SimpleDb(object):
@@ -198,6 +200,77 @@ class SimpleDb(object):
 
         start = (page_index - 1) * page_size
         return ' limit %s,%s' % (start, page_size)
+
+    def db_update(self, operation, params=None, re_conn=True):
+        """
+        更新操作, 系统错误需要以异常的方式抛出，否者调用方有可能分不清是错误还是执行成功
+        :param operation:
+        :param params:
+        :param re_conn:
+        :return:
+        sql = '''delete from t_v2_product where id=%s'''
+        result = self.db_update(sql, [js['id']])
+        """
+        self.ping(re_conn)
+
+        try:
+            csr = self.conn.cursor()
+            csr.execute(operation, tuple(params) if isinstance(params, list) else params)
+            affect = csr.rowcount
+            csr.close()
+            return affect
+        except Exception as e:
+            log_str = 'db_update db got exception:%s, operation:%s, params:%s' % (str(e), operation, params)
+            logging.error(log_str)
+            raise
+
+    def db_commit(self):
+        try:
+            self.conn.commit()
+        except Exception as e:
+            self.conn.rollback()
+            logging.error('detect db exception:%s' % str(e))
+            raise
+
+    def db_rollback(self):
+        """rollback失败直接关闭连接"""
+        try:
+            self.conn.rollback()
+        except Exception as e:
+            self.conn.close()
+            logging.error('detect db exception:%s' % str(e))
+            raise
+
+    def append_set_update(self, js, simple, js_format):
+        """
+        生成update字段'set k1=v1,k2=v2'
+        :param js:
+        :param simple: 简单类型的字段值列表
+        :param js_format: 这个列表里的字段值都是一个json对象，需要先通过json_encode转成字符串
+        :return:
+        使用样例
+        update = self.append_set_update(js, ['categoryid', 'name', 'last_modify'], ['product'])
+        if not update:
+            logging.error('invalid param')
+            return self.error_detail2rsp(CODE_INPUT_PARAM_INVALID, 'invalid param')
+        sql = '''update t_v2_product ''' + update + ''' where id=%s'''
+        result = self.db_update(sql, [js['id']])
+        """
+        logging.debug("js: %s", js)
+        self.ping(False)
+        field_list = []
+        for k in simple + js_format:
+            if k not in js:
+                logging.warning('miss key in js, %s' % k)
+                continue
+            # 有些提交的内容中，含有百分号'%'，此时需要对%替换成%%，方可正确更新和显示字符串。
+            if k in simple and isinstance(js[k], str):
+                js[k], num = re.subn(r"%", "%%", js[k])
+            if k in js_format:
+                js[k], num = re.subn(r"%", "%%", json_encode(js[k]))
+                js[k] = json_decode(js[k])
+            field_list.append('%s=%s' % (k, self.conn.escape(json_encode(js[k]) if k in js_format else js[k])))
+        return 'set %s' % ','.join(field_list)
 
 
 
