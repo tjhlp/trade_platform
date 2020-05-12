@@ -53,7 +53,6 @@ class Model(SimpleDb):
             re_conn = False
 
         last_insert_id = super().db_insert(sql, value, re_conn)
-        print('last_wind:%s', last_insert_id)
         return last_insert_id
 
     def my_query(self, table_name, params, limit):
@@ -65,15 +64,19 @@ class Model(SimpleDb):
             where_key.append('name=%s')
             where_value.append(params['name'])
 
+        if 'mobile' in params:
+            where_key.append('mobile=%s')
+            where_value.append(params['mobile'])
 
-        sql = '''SELECT * FROM %s WHERE %s ORDER BY id DESC %s''' % \
-              (table_name, ' AND '.join(where_key), limit)
+        if not where_key:
+            where_key.append('1=%s')
+            where_value.append('1')
 
+        sql = '''SELECT * FROM %s WHERE %s ORDER BY id DESC ''' % \
+              (table_name, ' AND '.join(where_key))
+        if limit:
+            sql += ('%s' % limit)
         result = super().db_query(sql, where_value)
-
-        for x in result:
-            x['name'] = json_decode(x['name'])
-            x['mobile'] = json_decode(x['product'])
 
         rsp = {}
         rsp['list'] = result
@@ -116,20 +119,22 @@ class UserInfo(object):
 
     @url_module_report
     def user_list(self):
-        params = {'name': (0, str), 'mobile': (0, str), 'page_index': (1, int), 'page_size': (1, int), }
+        params = {'name': (0, str), 'mobile': (0, str), 'page_index': (1, int), 'page_size': (1, int)}
         js, code = valid_body_js(params)
         if not js:
             logging.error('invalid param')
             return code2rsp(CODE_INPUT_PARAM_INVALID)
 
-        limit = self.model.append_limit(js['page_index'], js['page_size'])
-        if not limit:
-            return code2rsp(CODE_INVALID_PAGE_INDEX_SIZE)
+        limit = None
+        if 'page_index' and 'page_size' in js:
+            limit = self.model.append_limit(js['page_index'], js['page_size'])
+            if not limit:
+                return code2rsp(CODE_INVALID_PAGE_INDEX_SIZE)
 
         # # 业务逻辑
-        user = self.model.my_query('user', js, limit)
+        rsp = self.model.my_query('user', js, limit)
         # 返回响应信息
-        if not user:
+        if not rsp:
             return code2rsp(CODE_QUERY_ERROR)
 
-        return code2rsp(CODE_SUCCESS)
+        return dict2rsp(CODE_SUCCESS, rsp)

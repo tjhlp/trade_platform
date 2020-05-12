@@ -87,5 +87,13 @@ class Test(SimpleDb):
         return last_insert_id
 
 
-t = Test()
-t.get()
+# t = Test()
+# t.get()
+
+
+js = {'page_index':123, 'page_size':2}
+js1 = {}
+if 'page_index' and 'page_size' in js1:
+    print(123)
+if [1]:
+    print(2222)
