@@ -44,6 +44,8 @@ class User(object):
 
             '/register': user_info.add_user,
             '/list': user_info.user_list,
+            '/remove': user_info.remove,
+            '/update': user_info.update,
         }
 
         for url in post_urls:

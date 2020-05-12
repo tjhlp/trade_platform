@@ -86,14 +86,17 @@ class Test(SimpleDb):
         last_insert_id = super().db_insert(sql, value, True)
         return last_insert_id
 
+    def update(self):
+
+        sql = '''update user set state='删除' where id=%s'''
+        result = super().db_update(sql, [5])
+
+
 
 # t = Test()
+# t.update()
 # t.get()
+print(type(1))
 
 
-js = {'page_index':123, 'page_size':2}
-js1 = {}
-if 'page_index' and 'page_size' in js1:
-    print(123)
-if [1]:
-    print(2222)
+

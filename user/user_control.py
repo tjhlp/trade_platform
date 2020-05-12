@@ -8,11 +8,11 @@ from svc_comm.svc_util import *
 from svc_comm.sys_code import *
 
 
-class Model(SimpleDb):
+class Model(object):
     T_USER = "user"
 
     def __init__(self):
-        super().__init__(DB_ACCOUNT_RELEASE)
+        self.mdb = SimpleDb()
 
     def simple_where_parse(self, where, table_name=None):
         """where条件解析，仅支持=和in操作, 各条件用and连接"""
@@ -52,13 +52,13 @@ class Model(SimpleDb):
         if re_conn:
             re_conn = False
 
-        last_insert_id = super().db_insert(sql, value, re_conn)
+        last_insert_id = self.mdb.db_insert(sql, value, re_conn)
         return last_insert_id
 
     def my_query(self, table_name, params, limit):
 
-        where_value = []
-        where_key = []
+        where_key = ['state=%s']
+        where_value = ['正常']
 
         if 'name' in params:
             where_key.append('name=%s')
@@ -68,22 +68,18 @@ class Model(SimpleDb):
             where_key.append('mobile=%s')
             where_value.append(params['mobile'])
 
-        if not where_key:
-            where_key.append('1=%s')
-            where_value.append('1')
 
         sql = '''SELECT * FROM %s WHERE %s ORDER BY id DESC ''' % \
               (table_name, ' AND '.join(where_key))
         if limit:
             sql += ('%s' % limit)
-        result = super().db_query(sql, where_value)
+        result = self.mdb.db_query(sql, where_value)
 
         rsp = {}
         rsp['list'] = result
         return rsp
 
-    def my_update(self, sql, js):
-        return super().db_update(sql, [js['id']])
+
 
 
 class UserInfo(object):
@@ -130,7 +126,7 @@ class UserInfo(object):
 
         limit = None
         if 'page_index' and 'page_size' in js:
-            limit = self.model.append_limit(js['page_index'], js['page_size'])
+            limit = self.model.mdb.append_limit(js['page_index'], js['page_size'])
             if not limit:
                 return code2rsp(CODE_INVALID_PAGE_INDEX_SIZE)
 
@@ -152,15 +148,15 @@ class UserInfo(object):
 
         try:
             # 软删除，将状态置为删除
-            sql = '''update user set status='删除' where id=%s'''
-            result = self.model.my_update(sql, [js['id']])
-            self.model.db_commit()
+            sql = '''update user set state='删除' where id=%s'''
+            result = self.model.mdb.db_update(sql, [js['id']])
+            self.model.mdb.db_commit()
             rsp = {'affect': result}
             return dict2rsp(CODE_SUCCESS, rsp)
         except Exception as e:
-            self.model.db_rollback()
+            self.model.mdb.db_rollback()
             logging.error("exception: %s", str(e))
-            logging.info("delete activity %s failed" % js['id'])
+            logging.info("delete %s failed" % js['id'])
             return code2rsp(CODE_ACTION_FAILED)
 
     @url_module_report
@@ -171,7 +167,7 @@ class UserInfo(object):
             logging.error('invalid param')
             return code2rsp(code)
 
-        update = self.model.append_set_update(js, ['id', 'name', 'mobile'], [])
+        update = self.model.mdb.append_set_update(js, ['id', 'name', 'mobile'], [])
         if not update:
             logging.error('invalid param')
             return code2rsp(CODE_INPUT_PARAM_INVALID, '')
