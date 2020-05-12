@@ -41,7 +41,7 @@ class User(object):
         user_info = UserInfo()
 
         post_urls = {
-
+            # 用户模块
             '/register': user_info.add_user,
             '/list': user_info.user_list,
             '/remove': user_info.remove,

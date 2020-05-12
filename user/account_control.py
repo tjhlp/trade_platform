@@ -76,7 +76,7 @@ class Model(object):
         return rsp
 
 
-class UserInfo(object):
+class Account(object):
     def __init__(self):
         self.model = Model()
 
@@ -103,10 +103,8 @@ class UserInfo(object):
 
         # # 业务逻辑
         user = self.model.my_insert('user', js)
-        account = self.model.my_insert('account', {'name': js['name']})
-
         # 返回响应信息
-        if not (user and account):
+        if not user:
             print('数据库插入失败')
             return code2rsp(CODE_ADD_ERROR)
 
