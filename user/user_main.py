@@ -3,6 +3,7 @@ import logging
 from flask import Blueprint
 from svc_comm import log_control, host
 from user.user_control import *
+from user.account_control import *
 
 
 user_console = Blueprint('user', __name__)
@@ -39,6 +40,7 @@ class User(object):
     def add_urls(cls, blue):
 
         user_info = UserInfo()
+        account_info = Account()
 
         post_urls = {
             # 用户模块
@@ -46,6 +48,12 @@ class User(object):
             '/list': user_info.user_list,
             '/remove': user_info.remove,
             '/update': user_info.update,
+
+            # 账户模块
+            '/account/register': account_info.account_add,
+            '/account/list': account_info.account_list,
+            '/account/remove': account_info.account_remove,
+            '/account/update': account_info.account_update,
         }
 
         for url in post_urls:

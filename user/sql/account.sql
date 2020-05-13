@@ -10,6 +10,11 @@ create table account(
 	created_time DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00'
 ) charset='utf8';
 
+ALTER TABLE account
+    ADD COLUMN user_id BIGINT(20) NOT NULL COMMENT '用户id' default 0;
+
+ALTER TABLE account
+    ADD COLUMN state VARCHAR(10) NOT NULL COMMENT '状态' DEFAULT '正常';
 
 
 

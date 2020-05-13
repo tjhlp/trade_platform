@@ -97,10 +97,7 @@ class Test(SimpleDb):
 # t.update()
 # t.get()
 # print(type(1))
-a = False
-b = False
-if not (a and b):
-    print('1122')
+
 
 
 
