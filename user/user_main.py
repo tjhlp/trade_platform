@@ -50,7 +50,7 @@ class User(object):
             '/update': user_info.update,
 
             # 账户模块
-            '/account/register': account_info.account_add,
+            '/account/add': account_info.account_add,
             '/account/list': account_info.account_list,
             '/account/remove': account_info.account_remove,
             '/account/update': account_info.account_update,

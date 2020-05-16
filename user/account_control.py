@@ -98,7 +98,7 @@ class Account(object):
 
     @url_module_report
     def account_list(self):
-        params = {'name': (0, str), 'account_attr': (0, int), 'user_id': (1, int)}
+        params = {'name': (0, str), 'account_attr': (0, int), 'user_id': (1, int), 'id': (0, int)}
         js, code = valid_body_js(params)
         if not js:
             logging.error('invalid param')

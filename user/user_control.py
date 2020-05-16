@@ -114,7 +114,7 @@ class UserInfo(object):
 
     @url_module_report
     def user_list(self):
-        params = {'name': (0, str), 'mobile': (0, str), 'page_index': (1, int), 'page_size': (1, int)}
+        params = {'id': (1, int), 'name': (0, str), 'mobile': (0, str), 'page_index': (1, int), 'page_size': (1, int)}
         js, code = valid_body_js(params)
         if not js:
             logging.error('invalid param')
