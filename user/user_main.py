@@ -48,6 +48,7 @@ class User(object):
             '/list': user_info.user_list,
             '/remove': user_info.remove,
             '/update': user_info.update,
+            '/login': user_info.login,
 
             # 账户模块
             '/account/add': account_info.account_add,

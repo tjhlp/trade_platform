@@ -70,7 +70,6 @@ class Model(object):
         if limit:
             sql += ('%s' % limit)
         result = self.mdb.db_query(sql, where_value)
-
         rsp = {}
         rsp['list'] = result
         return rsp
@@ -133,6 +132,25 @@ class UserInfo(object):
             return code2rsp(CODE_QUERY_ERROR)
 
         return dict2rsp(CODE_SUCCESS, rsp)
+
+    @url_module_report
+    def login(self):
+        params = {'name': (0, str), 'mobile': (0, str), 'password': (1, str)}
+        js, code = valid_body_js(params)
+        if not js:
+            logging.error('invalid param')
+            return code2rsp(CODE_INPUT_PARAM_INVALID)
+
+        if not re.match(r'^[a-zA-Z0-9_-]{5,20}$', js['name']):
+            if not re.match(r'^[a-zA-Z0-9]{6,20}$', js['mobile']):
+                return code2rsp(CODE_PASSWORD_TYPE)
+        rsp = self.model.my_query('user', js, None)
+        get_password = rsp['list'][0]['password']
+
+        if get_password != js['password']:
+            return code2rsp(CODE_PASSWORD_ERROR)
+
+        return code2rsp(CODE_SUCCESS)
 
     @url_module_report
     def remove(self):
