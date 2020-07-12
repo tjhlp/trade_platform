@@ -79,6 +79,16 @@ WSGI_APPLICATION = 'beans_bill.wsgi.application'
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': '172.17.0.4 ',
+        'PORT': 3306,
+        'USER': 'root',
+        'PASSWORD': 'Beans@2020',
+        'NAME': 'beans'
+    }
+}
 
 
 # Password validation
