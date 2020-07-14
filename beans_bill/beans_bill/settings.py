@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'beans_bill.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '172.17.0.4 ',
+        'HOST': '129.211.77.253',
         'PORT': 3306,
         'USER': 'root',
         'PASSWORD': 'Beans@2020',
