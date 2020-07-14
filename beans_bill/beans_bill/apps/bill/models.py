@@ -1,5 +1,5 @@
 from django.db import models
-from beans_bill.beans_bill.utils.models import BaseModel
+from beans_bill.utils.models import BaseModel
 
 
 # Create your models here.
