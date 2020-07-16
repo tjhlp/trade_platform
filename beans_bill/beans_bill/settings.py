@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'bill.apps.BillConfig',
     'expense.apps.ExpenseConfig',
+    'users.apps.UsersConfig',
 
 ]
 
@@ -174,3 +175,6 @@ LOGGING = {
         },
     }
 }
+
+# 自定义用户模型
+AUTH_USER_MODEL = 'users.UserModel'

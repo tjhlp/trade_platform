@@ -21,6 +21,8 @@ urlpatterns = [
 
     url(r'^', include('account.urls', namespace='account')),
 
+    url(r'^', include('users.urls', namespace='users')),
+
     url(r'^', include('bill.urls', namespace='bill')),
 
     url(r'^', include('expense.urls', namespace='expense')),
