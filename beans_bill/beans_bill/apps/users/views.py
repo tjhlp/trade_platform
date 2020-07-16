@@ -10,7 +10,7 @@ from users.models import UserModel
 
 class LoginView(View):
     def post(self, request):
-        params = {'systemID': (1, str), 'version': (1, str), 'username': (1, str), 'password': (1, str)}
+        params = {'username': (1, str), 'password': (1, str)}
         js, code = valid_body_js(request, params)
         if code != CODE_SUCCESS:
             logger.error("invalid param")
