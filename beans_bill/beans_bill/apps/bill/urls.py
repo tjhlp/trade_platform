@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
 
+    url(r'^bill/list/$', views.BillListView.as_view()),
 
 
 

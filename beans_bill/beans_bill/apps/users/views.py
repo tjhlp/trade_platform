@@ -23,7 +23,11 @@ class LoginView(View):
 
         # 响应
         # rsp = user_token(user, js)
-        return json_response(CODE_SUCCESS)
+        rsp = {
+            'user_id': user.user_id,
+            'user_name': user.username,
+        }
+        return json_response(CODE_SUCCESS, rsp)
 
 
 class LogoutView(View):
