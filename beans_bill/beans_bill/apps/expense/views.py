@@ -38,8 +38,7 @@ class ExpenseAddView(View):
 
     def post(self, request):
         params = {'user_id': (1, str), 'bill_id': (1, str), 'expense_name': (1, str), 'expense_type': (1, str),
-                  'expense_time': (1, str),
-                  'expense_cost': (1, str), 'expense_content': (1, str)}
+                  'expense_time': (1, str), 'expense_cost': (1, str), 'expense_content': (1, str)}
         js, code = valid_body_js(request, params)
         if code != CODE_SUCCESS:
             logger.error("invalid param")
