@@ -6,7 +6,7 @@ from beans_bill.utils.response_code import *
 from beans_bill.utils.comm_utils import *
 
 from users.models import UserModel
-
+from bill.models import BillInfo
 
 class LoginView(View):
     def post(self, request):
@@ -20,6 +20,7 @@ class LoginView(View):
         if user is None:
             logger.error('user_login got exception: username or password is error, params:%s' % (js))
             return json_response(CODE_USER_LOGIN_ERROR)
+
 
         # 响应
         # rsp = user_token(user, js)
@@ -60,9 +61,16 @@ class RegisterView(View):
 
         try:
             user = UserModel.objects.create_user(**js)
+            BillInfo.objects.create(
+                account_id=user.user_id,
+                bill_name='个人账单',
+                bill_auth='1',
+                bill_members='',
+            )
         except Exception as e:
             logger.error('user_register got exception:%s, params:%s' % (str(e), js))
             return json_response(CODE_USER_REGISTER_ERROR)
+
 
         # 响应
         # rsp = user_token(user, js)
