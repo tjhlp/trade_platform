@@ -36,19 +36,18 @@ class BillAddView(View):
     """ 添加账户"""
 
     def post(self, request):
-        params = {'user_id': (1, str), 'bill_name': (1, str),'bill_auth': (1, str)}
+        params = {'user_id': (1, str), 'bill_name': (1, str), 'bill_auth': (1, str)}
         js, code = valid_body_js(request, params)
         if code != CODE_SUCCESS:
             logger.error("invalid param")
             return json_response(code)
 
-        # 判断数据源是否属于所属节点
         try:
             info_models = BillInfo.objects.create(**js)
         except Exception as error:
             logger.error("BillInfo got exception：%s, params:%s" % (str(error), js))
             return json_response(CODE_NODE_SOURCE_MISSING)
         rsp = {
-            'bill_id': info_models
+            'bill_id': info_models.bill_id
         }
         return json_response(CODE_SUCCESS, rsp)
