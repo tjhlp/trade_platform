@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'expense.apps.ExpenseConfig',
     'users.apps.UsersConfig',
 
+    'gunicorn',
 ]
 
 MIDDLEWARE = [
