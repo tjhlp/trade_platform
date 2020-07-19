@@ -15,7 +15,6 @@ class ExpenseListView(View):
             logger.error("invalid param")
             return json_response(code)
 
-        # 判断数据源是否属于所属节点
         req_params = {''}
         try:
             info_models = ExpenseInfo.objects.filter(user_id=js['user_id'])
@@ -56,3 +55,17 @@ class ExpenseAddView(View):
             'expense_id': ex_list
         }
         return json_response(CODE_SUCCESS, rsp)
+
+class ExpenseRemoveView(View):
+    """ 添加消费记录"""
+
+    def post(self, request):
+        params = {'expense_id': (1, str)}
+        js, code = valid_body_js(request, params)
+        if code != CODE_SUCCESS:
+            logger.error("invalid param")
+            return json_response(code)
+
+        ExpenseInfo.objects.get(expense_id=js['expense_id']).delete()
+
+        return json_response(CODE_SUCCESS)
