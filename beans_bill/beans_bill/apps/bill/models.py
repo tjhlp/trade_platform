@@ -6,7 +6,7 @@ from beans_bill.utils.models import BaseModel
 class BillInfo(BaseModel):
     """账单表"""
     bill_id = models.AutoField(verbose_name='表ID', primary_key=True)
-    account_id = models.IntegerField(verbose_name='账号ID')
+    user_id = models.IntegerField(verbose_name='账号ID')
     bill_name = models.CharField(max_length=60, verbose_name='表名')
     # bill_auth(1.admin 2.user)
     bill_auth = models.CharField(max_length=5, verbose_name='权限')
