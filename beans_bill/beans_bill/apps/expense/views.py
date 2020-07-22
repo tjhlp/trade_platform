@@ -56,8 +56,9 @@ class ExpenseAddView(View):
         }
         return json_response(CODE_SUCCESS, rsp)
 
+
 class ExpenseRemoveView(View):
-    """ 添加消费记录"""
+    """ 删除消费记录"""
 
     def post(self, request):
         params = {'expense_id': (1, str)}

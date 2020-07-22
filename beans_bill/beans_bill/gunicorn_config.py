@@ -6,7 +6,7 @@ import multiprocessing
 
 bind = "0.0.0.0:9000"  # 绑定的ip与端口
 backlog = 512  # 监听队列数量，64-2048
-chdir = '/root/bill_backend/'  # gunicorn要切换到的目的工作目录
+chdir = '/root/bill_backend/beans_bill/'  # gunicorn要切换到的目的工作目录
 worker_class = 'sync'  # 使用gevent模式，还可以使用sync 模式，默认的是sync模式
 workers = 4  # multiprocessing.cpu_count()    #进程数
 threads = 16  # multiprocessing.cpu_count()*4 #指定每个进程开启的线程数
@@ -16,4 +16,4 @@ reload = True
 accesslog = "/root/data/logs/gunicorn_access.log"      #访问日志文件
 errorlog = "/root/data/logs/gunicorn_error.log"        #错误日志文件
 pidfile = 'gunicorn.pid'
-proc_name = 'beans'  # 进程名
+proc_name = 'beans_bill'  # 进程名
