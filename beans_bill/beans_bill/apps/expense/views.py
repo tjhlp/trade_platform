@@ -1,5 +1,5 @@
 from django.views import View
-
+import datetime
 from expense.models import *
 from beans_bill.utils.response_code import *
 from beans_bill.utils.comm_utils import *
@@ -96,3 +96,42 @@ class ExpenseUpdateView(View):
         ex_.save()
 
         return json_response(CODE_SUCCESS)
+
+
+class ExpenseCostView(View):
+    """ 个人消费总额"""
+
+    def post(self, request):
+        params = {'user_id': (1, str)}
+        js, code = valid_body_js(request, params)
+        if code != CODE_SUCCESS:
+            logger.error("invalid param")
+            return json_response(code)
+
+        today = datetime.date.today()
+        last_week = today - datetime.timedelta(days=7)
+        last_month = today - datetime.timedelta(days=30)
+        last_year = today - datetime.timedelta(days=365)
+
+        week_model = ExpenseInfo.objects.filter(expense_time__gt=last_week)
+        week_cost = 0
+        for week in week_model:
+            week_cost += week.expense_cost
+
+        month_model = ExpenseInfo.objects.filter(expense_time__gt=last_month)
+        month_cost = 0
+        for month in month_model:
+            month_cost += month.expense_cost
+
+        year_model = ExpenseInfo.objects.filter(expense_time__gt=last_year)
+        year_cost = 0
+        for year in year_model:
+            year_cost += year.expense_cost
+
+        rsp ={
+            'week_cost': week_cost,
+            'month_cost': month_cost,
+            'year_cost': year_cost,
+        }
+
+        return json_response(CODE_SUCCESS, rsp)

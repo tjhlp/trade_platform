@@ -8,5 +8,7 @@ urlpatterns = [
     url(r'^expense/update/$', views.ExpenseUpdateView.as_view()),
     url(r'^expense/remove/$', views.ExpenseRemoveView.as_view()),
 
+    url(r'^expense/cost/$', views.ExpenseCostView.as_view()),
+
 
 ]
