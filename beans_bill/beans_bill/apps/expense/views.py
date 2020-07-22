@@ -86,7 +86,6 @@ class ExpenseUpdateView(View):
         expense_id = js.pop('expense_id')
 
         ex_ = ExpenseInfo.objects.get(expense_id=expense_id)
-        print(ex_)
 
         ex_.expense_name = js['expense_name'] if js['expense_name'] else ex_.expense_name
         ex_.expense_type = js['expense_type'] if js['expense_type'] else ex_.expense_type
