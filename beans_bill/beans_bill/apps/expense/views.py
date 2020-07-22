@@ -70,3 +70,30 @@ class ExpenseRemoveView(View):
         ExpenseInfo.objects.get(expense_id=js['expense_id']).delete()
 
         return json_response(CODE_SUCCESS)
+
+
+class ExpenseUpdateView(View):
+    """ 更改消费记录"""
+
+    def post(self, request):
+        params = {'expense_id': (1, str), 'expense_name': (0, str), 'expense_type': (0, str),
+                  'expense_time': (0, str), 'expense_cost': (0, str), 'expense_content': (0, str)}
+        js, code = valid_body_js(request, params)
+        if code != CODE_SUCCESS:
+            logger.error("invalid param")
+            return json_response(code)
+
+        expense_id = js.pop('expense_id')
+
+        ex_ = ExpenseInfo.objects.get(expense_id=expense_id)
+        print(ex_)
+
+        ex_.expense_name = js['expense_name'] if js['expense_name'] else ex_.expense_name
+        ex_.expense_type = js['expense_type'] if js['expense_type'] else ex_.expense_type
+        ex_.expense_time = js['expense_time'] if js['expense_time'] else ex_.expense_time
+        ex_.expense_cost = js['expense_cost'] if js['expense_cost'] else ex_.expense_cost
+        ex_.expense_content = js['expense_content'] if js['expense_content'] else ex_.expense_content
+
+        ex_.save()
+
+        return json_response(CODE_SUCCESS)
