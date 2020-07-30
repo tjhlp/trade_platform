@@ -1,6 +1,7 @@
 from django.views import View
 import datetime
 from expense.models import *
+from bill.models import BillInfo
 from beans_bill.utils.response_code import *
 from beans_bill.utils.comm_utils import *
 
@@ -18,13 +19,17 @@ class ExpenseListView(View):
         req_params = {''}
         try:
             info_models = ExpenseInfo.objects.filter(user_id=js['user_id'])
+
         except Exception as error:
             logger.error("BillInfo got exception：%s, params:%s" % (str(error), js))
             return json_response(CODE_NODE_SOURCE_MISSING)
         res = []
         for info_model in info_models:
+            bill_info = BillInfo.objects.get(bill_id=info_model.bill_id)
             rsp = {
                 'expense_name': info_model.expense_name,
+                'bill_id': info_model.bill_id,
+                'bill_name': bill_info.bill_name,
                 'expense_type': info_model.expense_type,
                 'expense_time': info_model.expense_time,
                 'expense_cost': info_model.expense_cost,
