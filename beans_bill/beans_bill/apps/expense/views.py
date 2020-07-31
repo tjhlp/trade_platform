@@ -26,12 +26,14 @@ class ExpenseListView(View):
         res = []
         for info_model in info_models:
             bill_info = BillInfo.objects.get(bill_id=info_model.bill_id)
+            print(info_model.expense_time)
             rsp = {
-                'expense_name': info_model.expense_name,
                 'bill_id': info_model.bill_id,
                 'bill_name': bill_info.bill_name,
+                'expense_id': info_model.expense_id,
+                'expense_name': info_model.expense_name,
                 'expense_type': info_model.expense_type,
-                'expense_time': info_model.expense_time,
+                'expense_time': json_type(info_model.expense_time),
                 'expense_cost': info_model.expense_cost,
                 'expense_content': info_model.expense_content
             }
@@ -133,7 +135,7 @@ class ExpenseCostView(View):
         for year in year_model:
             year_cost += year.expense_cost
 
-        rsp ={
+        rsp = {
             'week_cost': week_cost,
             'month_cost': month_cost,
             'year_cost': year_cost,

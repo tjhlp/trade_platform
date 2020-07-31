@@ -4,7 +4,7 @@ import datetime
 
 from beans_bill.utils import response_code
 from django.http import JsonResponse
-
+import decimal
 logger = logging.getLogger('django')
 
 
@@ -156,3 +156,22 @@ def generate_insert_sql(source_ID, js):
         insert_field_data.append(tmp_tuple)
 
     return sql_insert_field, insert_field_data
+
+
+def json_type(v):
+    """
+    mysql的浮点数Decimal，各种日期时间类型，json转换默认都不支持，需要特别处理
+    :param v:
+    :return:
+    """
+    if isinstance(v, decimal.Decimal):
+        return str(v)
+    elif isinstance(v, datetime.datetime):
+        return v.strftime('%Y-%m-%d %H:%M:%S')
+    elif isinstance(v, datetime.date):
+        return v.strftime('%Y-%m-%d')
+    elif isinstance(v, datetime.timedelta):
+        h, remain = divmod(int(v.total_seconds()), 3600)
+        m, s = divmod(remain, 60)
+        return '%02d:%02d:%02d' % (h, m, s)
+    return v
