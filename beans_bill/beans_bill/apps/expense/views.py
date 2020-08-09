@@ -26,7 +26,6 @@ class ExpenseListView(View):
         res = []
         for info_model in info_models:
             bill_info = BillInfo.objects.get(bill_id=info_model.bill_id)
-            print(info_model.expense_time)
             rsp = {
                 'bill_id': info_model.bill_id,
                 'bill_name': bill_info.bill_name,
