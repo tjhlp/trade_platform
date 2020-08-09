@@ -182,3 +182,40 @@ LOGGING = {
 
 # 自定义用户模型
 AUTH_USER_MODEL = 'users.UserModel'
+
+
+# 跨域
+
+CORS_ALLOW_CREDENTIALS = True
+
+# CORS_ORIGIN_WHITELIST = (
+#     'localhost:8000',  # 请求的域名(此处仅在CORS_ORIGIN_ALLOW_ALL = False时有效)
+# )
+
+
+# 定义允许的匹配路径正则表达式
+CORS_URLS_REGEX = '^.*$'
+
+# 设置允许访问的方法
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
+)
+
+# 设置允许的header
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)
