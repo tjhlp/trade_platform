@@ -25,6 +25,7 @@ class ExpenseListView(View):
             return json_response(CODE_NODE_SOURCE_MISSING)
         res = []
         for info_model in info_models:
+            # 查询账单信息
             bill_info = BillInfo.objects.get(bill_id=info_model.bill_id)
             rsp = {
                 'bill_id': info_model.bill_id,
