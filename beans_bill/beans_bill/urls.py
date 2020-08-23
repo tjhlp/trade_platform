@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^', include('bill.urls', namespace='bill')),
 
     url(r'^', include('expense.urls', namespace='expense')),
+
 ]
