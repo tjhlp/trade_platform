@@ -24,7 +24,8 @@ urlpatterns = [
     url(r'^', include('users.urls', namespace='users')),
 
     url(r'^', include('bill.urls', namespace='bill')),
-
+    # xiaofei
     url(r'^', include('expense.urls', namespace='expense')),
 
 ]
+
